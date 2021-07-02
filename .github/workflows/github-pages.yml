@@ -4,13 +4,20 @@ on:
   push:
     branches:
       - master
-      - gh-pages
 
 jobs:
   github-pages:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: helaili/jekyll-action@2.0.1
+      - uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile', '**/_config.yml', '**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - uses:  helaili/jekyll-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
         env:
-          JEKYLL_PAT: ${{ secrets.JEKYLL_PAT }}
+          PAGES_REPO_NWO: ${{ github.repository }}
